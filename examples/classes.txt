@@ -1,0 +1,19 @@
+De Elitaire eend bevat:
+prive:
+	De poten(nummer).
+	De snavel(nummer).
+	De naam(zin).
+	De amputatie.
+publiek:
+	Bekijk het onstaan(geeft eend terug) met 'poten(nummer), snavel(nummer) en naam(zin)' van deze eend:
+		De poten(poten),
+		De snavel(snavel),
+		De naam(naam),
+		hierbij:
+			De amputatie is poten maal de snavel.
+		!
+	!
+	
+	Bekijk het zeggenschap(geeft zin terug):
+		Zeg "Eend".
+	!

@@ -1,0 +1,7 @@
+bekijk het tellen tot 'n(nummer)':
+	het resultaat is 0.
+	totdat 	n meer dan 10 is:
+		zeg het resultaat en maak n plus 1.
+	!
+	geef daarna het resultaat terug dan.
+
