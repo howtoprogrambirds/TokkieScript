@@ -33,11 +33,6 @@ def give_first_word(text: str) -> Tuple[str, str]:
    
    return first_word, rest_string
 
-#def erase_one_whitespace(text: str) -> str:
-#    if len(text) > 0 and text[0].isspace():
-#        return erase_one_whitespace(text[1:])
-#    return text
-
 def make_tokens(text: str, tokens: List[Lexer_token] = None) -> List[Lexer_token]:
     if tokens == None:
         tokens = []
