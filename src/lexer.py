@@ -22,16 +22,29 @@ class End_scope_token(Lexer_token):
 class Endline_token(Lexer_token):
     pass
 
+class Beg_type_token(Lexer_token):
+    pass
+
+class End_type_token(Lexer_token):
+    pass
+
+class Parameter_token(Lexer_token):
+    pass
+
+class Parameter_split_token(Lexer_token):
+    pass
+
 class String_token(Lexer_token):
-    def __init__(self, string_value):
+    def __init__(self, string_value, nmbr_line):
         self.string_value = string_value
+        Lexer_token.__init__(self, nmbr_line)
 
     def __str__(self):
-        return "{}: (sting value:{})".format(type(self).__name__ ,\
-                                             self.string_value)
+        return "{}: (string value:{}, line number:{})".format(type(self).__name__ ,\
+                                             self.string_value, self.nmbr_line)
     def __repr__(self):
-        return "<{}>: (sting value:{})".format(type(self).__name__ ,\
-                                             self.string_value)
+        return "<{}>: (string value:{}, line number:{})".format(type(self).__name__ ,\
+                                             self.string_value, self.nmbr_line)
 class Var_token(Lexer_token):
     def __init__(self, prev_name, nmbr_line, name = None):
         self.name = name
@@ -44,17 +57,20 @@ class Var_token(Lexer_token):
     def __repr__(self):
         return "<{}>: (prev name:{} name:{})".format(type(self).__name__ ,\
                                                    self.prev_name, self.name)
+class Type_token(Lexer_token):
+    def __init__(self, nmbr_line, type_name):
+        self.type_name = type_name
+        Lexer_token.__init__(self, nmbr_line)
 
+    def __str__(self):
+        return "{}: (type name:{} line number:{})".format(type(self).__name__ ,\
+                                                   self.type_name, self.nmbr_line)
+    def __repr__(self):
+        return "<{}>: (type name:{} line number:{})".format(type(self).__name__ ,\
+                                                            self.type_name, self.nmbr_line)
+ 
 class Print_token(Lexer_token):
     pass
-
-
-
-
-
-
-
-
 
 
 def give_first_alpha_word(remnants_of_text: str, alpha_word: str = None) -> Tuple[str, str]:
@@ -67,7 +83,6 @@ def give_first_alpha_word(remnants_of_text: str, alpha_word: str = None) -> Tupl
         return alpha_word, remnants_of_text
 
 
-
 # can't be a string with "/" literal.
 def make_string_token(remnants_of_text: str, string_word: str = None) -> Tuple[str, str]:
     if string_word == None:
@@ -78,6 +93,9 @@ def make_string_token(remnants_of_text: str, string_word: str = None) -> Tuple[s
     else:
         return make_string_token(remnants_of_text[1:], string_word + remnants_of_text[0])
 
+special_vars = ["Rutte", "Wilder", "Corona"]
+types = ["zin", "getal", "waarheid", "lijst"] 
+
 def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = None) -> List[Lexer_token]:
     if tokens == None:
         tokens = []
@@ -86,7 +104,7 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
 
     #CHAR----------------------------------------------------------------
     word = None
-    print(repr(text))
+    #print(repr(text))
     if text == "":
         return tokens
     elif text[0] == " " or text[0] == "\t":
@@ -101,10 +119,22 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
         return make_tokens(text[1:], tokens, nmbr_line)
     elif text[0] == "\"":
         string_literal, text = make_string_token(text[1:])
-        tokens.append(String_token(string_literal))
+        tokens.append(String_token(string_literal, nmbr_line))
         return make_tokens(text, tokens, nmbr_line)
+    elif text[0] == "\'":
+        tokens.append(Parameter_token(nmbr_line))
+        return make_tokens(text[1:], tokens, nmbr_line)
+    elif text[0] == "(":
+        tokens.append(Beg_type_token(nmbr_line))
+        return make_tokens(text[1:], tokens, nmbr_line)
+    elif text[0] == ")":
+        tokens.append(End_type_token(nmbr_line))
+        return make_tokens(text[1:], tokens, nmbr_line)
     elif text[0] == ".":
         tokens.append(Endline_token(nmbr_line))
+        return make_tokens(text[1:], tokens, nmbr_line)
+    elif text[0] == ",":
+        tokens.append(Parameter_split_token(nmbr_line))
         return make_tokens(text[1:], tokens, nmbr_line)
 
 
@@ -113,7 +143,13 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
         word, text = give_first_alpha_word(text)
     #if tokens != []:
     #    print(type(tokens[-1]), tokens[-1])
-    if word == "bekijk":
+    if word in special_vars:
+        tokens.append(Var_token("NONE", nmbr_line, word))
+        return make_tokens(text, tokens, nmbr_line)
+    if word in types:
+        tokens.append(Type_token(nmbr_line, word))
+        return make_tokens(text, tokens, nmbr_line)
+    elif word == "bekijk":
         tokens.append(Func_token(nmbr_line))
         return make_tokens(text, tokens, nmbr_line)
     elif word == "de" or word == "het" or word == "een":
@@ -128,13 +164,23 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
         return make_tokens(text, tokens, nmbr_line)
     elif text == "":
         return tokens
+    elif word == "":
+        print("can't get a token with this char:", repr(text[0]))
+        return make_tokens(text, tokens, nmbr_line)
     else:
         print("can't get a token with this word:", repr(word))
         return make_tokens(text, tokens, nmbr_line)
     return tokens
 
 if __name__ == "__main__":
-    with open("../examples/hello_world.txt", "r") as f:
-        tokens = make_tokens(f.read())
-        for token in tokens:
+    #with open("../examples/hello_world.txt", "r") as f:
+    #    hello_word_tokens = make_tokens(f.read())
+    #    for token in hello_word_tokens:
+    #        print(token)
+    
+    with open("../examples/tell_me_your_name.txt", "r") as f:
+        tmyn_tokens = make_tokens(f.read())
+        for token in tmyn_tokens:
             print(token)
+
+
