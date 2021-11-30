@@ -57,6 +57,16 @@ class Var_token(Lexer_token):
     def __repr__(self):
         return "<{}>: (prev name:{} name:{})".format(type(self).__name__ ,\
                                                    self.prev_name, self.name)
+class Class_token(Lexer_token):
+    def __init__(self, nmbr_line, name = None):
+        self.name = name
+        Lexer_token.__init__(self, nmbr_line)
+
+    def __str__(self):
+        return "{}: (name:{})".format(type(self).__name__ , self.name)
+    def __repr__(self):
+        return "<{}>: (name:{})".format(type(self).__name__, self.name)
+ 
 class Type_token(Lexer_token):
     def __init__(self, nmbr_line, type_name):
         self.type_name = type_name
@@ -141,6 +151,7 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
     # WORD ---------------------------------------------------------------
     if text != None:
         word, text = give_first_alpha_word(text)
+    print(word)
     #if tokens != []:
     #    print(type(tokens[-1]), tokens[-1])
     if word in special_vars:
@@ -155,13 +166,18 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
     elif word == "de" or word == "het" or word == "een":
         tokens.append(Var_token(word, nmbr_line))
         return make_tokens(text, tokens, nmbr_line)
+    elif word == "Elitaire" or word == "elitaire":
+        tokens.append(Class_token(nmbr_line))
+        return make_tokens(text, tokens, nmbr_line)
     elif word == "Zeg":
         tokens.append(Print_token(nmbr_line))
         return make_tokens(text, tokens, nmbr_line)
     # make a name for the variable
-    elif type(tokens[-1]) == Var_token and tokens[-1].name == None:
-        tokens[-1].name = word
-        return make_tokens(text, tokens, nmbr_line)
+    if tokens != []:
+        if type(tokens[-1]) == Var_token or type(tokens[-1]) == Class_token and tokens[-1].name == None:
+            tokens[-1].name = word
+            return make_tokens(text, tokens, nmbr_line)
+            
     elif text == "":
         return tokens
     elif word == "":
@@ -178,9 +194,14 @@ if __name__ == "__main__":
     #    for token in hello_word_tokens:
     #        print(token)
     
-    with open("../examples/tell_me_your_name.txt", "r") as f:
-        tmyn_tokens = make_tokens(f.read())
-        for token in tmyn_tokens:
+    #with open("../examples/tell_me_your_name.txt", "r") as f:
+    #    tmyn_tokens = make_tokens(f.read())
+    #    for token in tmyn_tokens:
+    #        print(token)
+
+    with open("../examples/classes.txt", "r") as f:
+        class_tokens = make_tokens(f.read())
+        for token in class_tokens:
             print(token)
 
 
