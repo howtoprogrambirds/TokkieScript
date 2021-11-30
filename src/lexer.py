@@ -102,6 +102,8 @@ class Type_token(Lexer_token):
 class Print_token(Lexer_token):
     pass
 
+class Run_token(Lexer_token):
+    pass
 
 def give_first_alpha_word(remnants_of_text: str, alpha_word: str = None) -> Tuple[str, str]:
     if alpha_word == None:
@@ -125,9 +127,8 @@ def make_string_token(remnants_of_text: str, string_word: str = None) -> Tuple[s
 
 special_vars = ["Rutte", "Wilders", "Corona"]
 types = ["zin", "nummer", "waarheid", "lijst"] 
-operators = ["plus", "minus", "gedeelt door", "maal", "is hetzelvde als", 
-             "is toch niet", "klijner dan", "is minder man", "meer dan", 
-             "is groter dan", "is"]
+operators = ["plus", "minus", "gedeelt", "maal", "hetzelvde", "niet", 
+             "klijner", "minder", "meer", "groter", "is"]
 
 def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = None) -> List[Lexer_token]:
     if tokens == None:
@@ -208,6 +209,9 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
     elif word == "Zeg":
         tokens.append(Print_token(nmbr_line))
         return make_tokens(text, tokens, nmbr_line)
+    elif word == "Roep":
+        tokens.append(Run_token(nmbr_line))
+        return make_tokens(text, tokens, nmbr_line)
     elif text == "":
         return tokens
     elif word == "":
@@ -236,11 +240,17 @@ if __name__ == "__main__":
     #    for token in tmyn_tokens:
     #        print(token)
 
-    with open("../examples/classes.txt", "r") as f:
+    #with open("../examples/classes.txt", "r") as f:
+    #    class_tokens = make_tokens(f.read())
+    #    for token in class_tokens:
+    #        print(token)
+    #        if type(token) == Endline_token or type(token) == Beg_scope_token:
+    #            print()
+
+    with open("../examples/go_to_statements.txt", "r") as f:
         class_tokens = make_tokens(f.read())
         for token in class_tokens:
             print(token)
             if type(token) == Endline_token or type(token) == Beg_scope_token:
                 print()
-
 
