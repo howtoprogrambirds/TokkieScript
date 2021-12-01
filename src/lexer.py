@@ -34,8 +34,18 @@ class Parameter_token(Lexer_token):
 class Comma_token(Lexer_token):
     pass
 
+class For_token(Lexer_token):
+    pass
+
+class Return_token(Lexer_token):
+    pass
+
 class Constructor_token(Lexer_token):
     pass
+
+class Renew_token(Lexer_token):
+    pass
+
 class Operator_token(Lexer_token):
     def __init__(self, operator_type, nmbr_line):
         self.operator_type = operator_type
@@ -59,6 +69,19 @@ class String_token(Lexer_token):
     def __repr__(self):
         return "<{}>: (string value:{}, line number:{})".format(type(self).__name__ ,\
                                              self.string_value, self.nmbr_line)
+
+class Number_token(Lexer_token):
+    def __init__(self, number_string, nmbr_line):
+        self.number_string = number_string
+        Lexer_token.__init__(self, nmbr_line)
+
+    def __str__(self):
+        return "{}: (number value:{}, line number:{})".format(type(self).__name__ ,\
+                                             self.number_string, self.nmbr_line)
+    def __repr__(self):
+        return "<{}>: (number value:{}, line number:{})".format(type(self).__name__ ,\
+                                             self.number_string, self.nmbr_line)
+
 class Var_token(Lexer_token):
     def __init__(self, nmbr_line, name = None):
         self.name = name
@@ -116,19 +139,32 @@ def give_first_alpha_word(remnants_of_text: str, alpha_word: str = None) -> Tupl
 
 
 # can't be a string with "/" literal.
-def make_string_token(remnants_of_text: str, string_word: str = None) -> Tuple[str, str]:
+def split_string_from_text(remnants_of_text: str, string_word: str = None) -> Tuple[str, str]:
     if string_word == None:
         string_word = ""
     if remnants_of_text[0] == "\"":
         print(string_word, " || ", (remnants_of_text[1:]))
         return string_word, remnants_of_text[1:]
     else:
-        return make_string_token(remnants_of_text[1:], string_word + remnants_of_text[0])
+        return split_string_from_text(remnants_of_text[1:], string_word + remnants_of_text[0])
+
+def split_number_from_text(remnants_of_text: str, string_number: str = None, first_digit: bool = True, has_decimal_point: bool = False, minus: bool = False) -> Tuple[str, str]:
+    if string_number == None:
+        string_number = ""
+    if remnants_of_text[0].isdigit():
+        return split_number_from_text(remnants_of_text[1:], string_number + remnants_of_text[0], False, has_decimal_point, minus)
+    elif remnants_of_text[0] == "." and not first_digit and not has_decimal_point and remnants_of_text[1].isdigit():
+        return split_number_from_text(remnants_of_text[1:], string_number + remnants_of_text[0], first_digit, True, minus)
+    elif remnants_of_text[0] == "-" and not first_digit and not minus: 
+        return split_number_from_text(remnants_of_text[1:], string_number + remnants_of_text[0], first_digit, has_decimal_point, True)
+    else:
+        return string_number, remnants_of_text
+
 
 special_vars = ["Rutte", "Wilders", "Corona"]
 types = ["zin", "nummer", "waarheid", "lijst"] 
 operators = ["plus", "minus", "gedeelt", "maal", "hetzelvde", "niet", 
-             "klijner", "minder", "meer", "groter", "is"]
+             "klijner", "minder", "meer", "groter", "is", "maak"]
 
 def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = None) -> List[Lexer_token]:
     if tokens == None:
@@ -152,7 +188,7 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
         tokens.append(End_scope_token(nmbr_line))
         return make_tokens(text[1:], tokens, nmbr_line)
     elif text[0] == "\"":
-        string_literal, text = make_string_token(text[1:])
+        string_literal, text = split_string_from_text(text[1:])
         tokens.append(String_token(string_literal, nmbr_line))
         return make_tokens(text, tokens, nmbr_line)
     elif text[0] == "\'":
@@ -170,7 +206,10 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
     elif text[0] == ",":
         tokens.append(Comma_token(nmbr_line))
         return make_tokens(text[1:], tokens, nmbr_line)
-
+    elif text[0].isdigit() or text[0] == "-" and text[1].isdigit():
+        number_literal, text = split_number_from_text(text)
+        tokens.append(Number_token(number_literal, nmbr_line))
+        return make_tokens(text, tokens, nmbr_line)
 
     # WORD ---------------------------------------------------------------
     if text != None:
@@ -198,6 +237,15 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
         return make_tokens(text, tokens, nmbr_line)
     elif word == "Bekijk":
         tokens.append(Func_token(nmbr_line))
+        return make_tokens(text, tokens, nmbr_line)
+    elif word == "Totdat":
+        tokens.append(For_token(nmbr_line))
+        return make_tokens(text, tokens, nmbr_line)
+    elif word == "Geef":
+        tokens.append(Return_token(nmbr_line))
+        return make_tokens(text, tokens, nmbr_line)
+    elif word == "en":
+        tokens.append(Renew_token(nmbr_line))
         return make_tokens(text, tokens, nmbr_line)
     elif word == "de" or word == "het" or word == "een" \
         or word == "De" or word == "Het" or word == "Een":
@@ -247,7 +295,14 @@ if __name__ == "__main__":
     #        if type(token) == Endline_token or type(token) == Beg_scope_token:
     #            print()
 
-    with open("../examples/go_to_statements.txt", "r") as f:
+    #with open("../examples/go_to_statements.txt", "r") as f:
+    #    class_tokens = make_tokens(f.read())
+    #    for token in class_tokens:
+    #        print(token)
+    #        if type(token) == Endline_token or type(token) == Beg_scope_token:
+    #            print()
+
+    with open("../examples/loops.txt", "r") as f:
         class_tokens = make_tokens(f.read())
         for token in class_tokens:
             print(token)
