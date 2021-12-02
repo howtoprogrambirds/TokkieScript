@@ -28,6 +28,12 @@ class Beg_type_token(Lexer_token):
 class End_type_token(Lexer_token):
     pass
 
+class Beg_array_token(Lexer_token):
+    pass
+
+class End_array_token(Lexer_token):
+    pass
+
 class Parameter_token(Lexer_token):
     pass
 
@@ -128,6 +134,12 @@ class Print_token(Lexer_token):
 class Run_token(Lexer_token):
     pass
 
+class Foldl_token(Lexer_token):
+    pass
+
+class Foldr_token(Lexer_token):
+    pass
+
 def give_first_alpha_word(remnants_of_text: str, alpha_word: str = None) -> Tuple[str, str]:
     if alpha_word == None:
         alpha_word = ""
@@ -200,6 +212,12 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
     elif text[0] == ")":
         tokens.append(End_type_token(nmbr_line))
         return make_tokens(text[1:], tokens, nmbr_line)
+    elif text[0] == "[":
+        tokens.append(Beg_array_token(nmbr_line))
+        return make_tokens(text[1:], tokens, nmbr_line)
+    elif text[0] == "]":
+        tokens.append(End_array_token(nmbr_line))
+        return make_tokens(text[1:], tokens, nmbr_line)
     elif text[0] == ".":
         tokens.append(Endline_token(nmbr_line))
         return make_tokens(text[1:], tokens, nmbr_line)
@@ -243,6 +261,12 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
         return make_tokens(text, tokens, nmbr_line)
     elif word == "Geef":
         tokens.append(Return_token(nmbr_line))
+        return make_tokens(text, tokens, nmbr_line)
+    elif word == "LekkerLinks":
+        tokens.append(Foldl_token(nmbr_line))
+        return make_tokens(text, tokens, nmbr_line)
+    elif word == "LekkerRechts":
+        tokens.append(Foldr_token(nmbr_line))
         return make_tokens(text, tokens, nmbr_line)
     elif word == "en":
         tokens.append(Renew_token(nmbr_line))
@@ -302,10 +326,25 @@ if __name__ == "__main__":
     #        if type(token) == Endline_token or type(token) == Beg_scope_token:
     #            print()
 
-    with open("../examples/loops.txt", "r") as f:
+    #with open("../examples/loops.txt", "r") as f:
+    #    class_tokens = make_tokens(f.read())
+    #    for token in class_tokens:
+    #        print(token)
+    #        if type(token) == Endline_token or type(token) == Beg_scope_token:
+    #            print()
+    
+    with open("../examples/foldl.txt", "r") as f:
         class_tokens = make_tokens(f.read())
         for token in class_tokens:
             print(token)
             if type(token) == Endline_token or type(token) == Beg_scope_token:
-                print()
+                print()   
+     
+    with open("../examples/foldr.txt", "r") as f:
+        class_tokens = make_tokens(f.read())
+        for token in class_tokens:
+            print(token)
+            if type(token) == Endline_token or type(token) == Beg_scope_token:
+                print()   
+ 
 
