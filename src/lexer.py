@@ -13,6 +13,12 @@ class Lexer_token:
 class Func_token(Lexer_token):
     pass
 
+class If_token(Lexer_token):
+    pass
+
+class Else_token(Lexer_token):
+    pass
+
 class Beg_scope_token(Lexer_token):
     pass
 
@@ -40,7 +46,7 @@ class Parameter_token(Lexer_token):
 class Comma_token(Lexer_token):
     pass
 
-class For_token(Lexer_token):
+class While_token(Lexer_token):
     pass
 
 class Return_token(Lexer_token):
@@ -174,9 +180,10 @@ def split_number_from_text(remnants_of_text: str, string_number: str = None, fir
 
 
 special_vars = ["Rutte", "Wilders", "Corona"]
-types = ["zin", "nummer", "waarheid", "lijst"] 
+types = ["zin", "nummer", "waarheid", "onwaarheid", "lijst"] 
 operators = ["plus", "minus", "gedeelt", "maal", "hetzelvde", "niet", 
              "klijner", "minder", "meer", "groter", "is", "maak"]
+char_operators = ["+", "-", "/", "*"]
 
 def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = None) -> List[Lexer_token]:
     if tokens == None:
@@ -224,6 +231,9 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
     elif text[0] == ",":
         tokens.append(Comma_token(nmbr_line))
         return make_tokens(text[1:], tokens, nmbr_line)
+    elif text[0] in char_operators:
+        tokens.append(Operator_token(text[0], nmbr_line))
+        return make_tokens(text[1:], tokens, nmbr_line)
     elif text[0].isdigit() or text[0] == "-" and text[1].isdigit():
         number_literal, text = split_number_from_text(text)
         tokens.append(Number_token(number_literal, nmbr_line))
@@ -250,14 +260,20 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
     elif word == "publiek":
         tokens.append(Public_token(nmbr_line))
         return make_tokens(text, tokens, nmbr_line)
-    elif word == "hierbij":
+    elif word == "Hierbij":
         tokens.append(Constructor_token(nmbr_line))
         return make_tokens(text, tokens, nmbr_line)
     elif word == "Bekijk":
         tokens.append(Func_token(nmbr_line))
         return make_tokens(text, tokens, nmbr_line)
+    elif word == "Als":
+        tokens.append(If_token(nmbr_line))
+        return make_tokens(text, tokens, nmbr_line)
+    elif word == "Anders":
+        tokens.append(Else_token(nmbr_line))
+        return make_tokens(text, tokens, nmbr_line)
     elif word == "Totdat":
-        tokens.append(For_token(nmbr_line))
+        tokens.append(While_token(nmbr_line))
         return make_tokens(text, tokens, nmbr_line)
     elif word == "Geef":
         tokens.append(Return_token(nmbr_line))
@@ -333,18 +349,10 @@ if __name__ == "__main__":
     #        if type(token) == Endline_token or type(token) == Beg_scope_token:
     #            print()
     
-    with open("../examples/foldl.txt", "r") as f:
+    with open("../examples/double_recursive.txt", "r") as f:
         class_tokens = make_tokens(f.read())
         for token in class_tokens:
             print(token)
             if type(token) == Endline_token or type(token) == Beg_scope_token:
                 print()   
-     
-    with open("../examples/foldr.txt", "r") as f:
-        class_tokens = make_tokens(f.read())
-        for token in class_tokens:
-            print(token)
-            if type(token) == Endline_token or type(token) == Beg_scope_token:
-                print()   
- 
 
