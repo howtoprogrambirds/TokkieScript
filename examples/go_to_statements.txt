@@ -1,9 +1,9 @@
-bekijk wat de hoofdlijn doet:
+Bekijk wat de hoofdlijn doet:
 	Zeg "hallo wereld van de hoofdlijn functie".
 	Roep de planeet aan.
 	Zeg "hallo wereld weer van vorige hoofdlijn".
 !
 
-bekijk wat de planeet te zeggen heeft:
+Bekijk wat de planeet te zeggen heeft:
 	Zeg "hallo wereld van een andere planeet".
 !

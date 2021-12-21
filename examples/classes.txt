@@ -3,17 +3,18 @@ prive:
 	De poten(nummer).
 	De snavel(nummer).
 	De naam(zin).
-	De amputatie.
+	De amputatie(nummer).
 publiek:
-	Bekijk het onstaan(geeft eend terug) met 'poten(nummer), snavel(nummer) en naam(zin)' van deze eend:
-		De poten(poten),
-		De snavel(snavel),
-		De naam(naam),
+	Bekijk het onstaan(geeft de eend terug) met 'de poten(nummer), een snavel(nummer) en een naam(zin)' van deze eend:
+		De poten(de poten),
+		De snavel(een snavel),
+		Een naam(een naam),
 		hierbij:
-			De amputatie is poten maal de snavel.
+			De amputatie is de poten maal de snavel.
 		!
 	!
 	
 	Bekijk het zeggenschap(geeft zin terug):
-		Zeg "Eend".
+		Zeg "Dit is een Eend".
 	!
+!

@@ -1,0 +1,21 @@
+een evenheid(nummer) met 'een n(nummer)'.
+een onevenheid(nummer) met 'een n(nummer)'.
+
+Bekijk de evenheid met 'een n(nummer)':
+	Als een n hetzelvde is als 0:
+		Geef waarheid terug.
+	!
+	Anders:
+		Geef de evenheidstest met 'een n - 1' terug.
+	!
+!
+
+Bekijk de onevenheid met 'een n(nummer)':
+	Als een n hetzelvde is als 0:
+		Geef onwaarheid terug.
+	!
+	Anders:
+		Geef de onevenheidstest met 'een n - 1' terug.
+	!
+!
+
