@@ -1,7 +1,7 @@
 from typing import List, Tuple
 import re
 
-class Lexer_token:    
+class Lexer_strct_token:    
     def __init__(self, nmbr_line):
         self.nmbr_line = nmbr_line
     def __str__(self):
@@ -10,58 +10,58 @@ class Lexer_token:
     def __repr__(self):
         return "<{}>: (line number:{})".format(type(self).__name__, self.nmbr_line)
 
-class Func_token(Lexer_token):
+class Func_token(Lexer_strct_token):
     pass
 
-class If_token(Lexer_token):
+class If_token(Lexer_strct_token):
     pass
 
-class Else_token(Lexer_token):
+class Else_token(Lexer_strct_token):
     pass
 
-class Beg_scope_token(Lexer_token):
+class Beg_scope_token(Lexer_strct_token):
     pass
 
-class End_scope_token(Lexer_token):
+class End_scope_token(Lexer_strct_token):
     pass
 
-class Endline_token(Lexer_token):
+class Endline_token(Lexer_strct_token):
     pass
 
-class Beg_type_token(Lexer_token):
+class Beg_type_token(Lexer_strct_token):
     pass
 
-class End_type_token(Lexer_token):
+class End_type_token(Lexer_strct_token):
     pass
 
-class Beg_array_token(Lexer_token):
+class Beg_array_token(Lexer_strct_token):
     pass
 
-class End_array_token(Lexer_token):
+class End_array_token(Lexer_strct_token):
     pass
 
-class Parameter_token(Lexer_token):
+class Parameter_scope_token(Lexer_strct_token):
     pass
 
-class Comma_token(Lexer_token):
+class Comma_token(Lexer_strct_token):
     pass
 
-class While_token(Lexer_token):
+class While_token(Lexer_strct_token):
     pass
 
-class Return_token(Lexer_token):
+class Return_token(Lexer_strct_token):
     pass
 
-class Constructor_token(Lexer_token):
+class Constructor_token(Lexer_strct_token):
     pass
 
-class Renew_token(Lexer_token):
+class Renew_token(Lexer_strct_token):
     pass
 
-class Operator_token(Lexer_token):
+class Operator_token(Lexer_strct_token):
     def __init__(self, operator_type, nmbr_line):
         self.operator_type = operator_type
-        Lexer_token.__init__(self, nmbr_line)
+        Lexer_strct_token.__init__(self, nmbr_line)
 
     def __str__(self):
         return "{}: (operator type:{}, line number:{})".format(type(self).__name__ ,\
@@ -69,11 +69,17 @@ class Operator_token(Lexer_token):
     def __repr__(self):
         return "<{}>: (operator type:{}, line number:{})".format(type(self).__name__ ,\
                                              self.operator_type, self.nmbr_line)
-   
-class String_token(Lexer_token):
+
+class Value_token(Lexer_strct_token):
+    pass  
+
+class Literal_token(Value_token):
+    pass  
+
+class String_token(Literal_token):
     def __init__(self, string_value, nmbr_line):
         self.string_value = string_value
-        Lexer_token.__init__(self, nmbr_line)
+        Lexer_strct_token.__init__(self, nmbr_line)
 
     def __str__(self):
         return "{}: (string value:{}, line number:{})".format(type(self).__name__ ,\
@@ -82,10 +88,10 @@ class String_token(Lexer_token):
         return "<{}>: (string value:{}, line number:{})".format(type(self).__name__ ,\
                                              self.string_value, self.nmbr_line)
 
-class Number_token(Lexer_token):
+class Number_token(Literal_token):
     def __init__(self, number_string, nmbr_line):
         self.number_string = number_string
-        Lexer_token.__init__(self, nmbr_line)
+        Lexer_strct_token.__init__(self, nmbr_line)
 
     def __str__(self):
         return "{}: (number value:{}, line number:{})".format(type(self).__name__ ,\
@@ -94,38 +100,50 @@ class Number_token(Lexer_token):
         return "<{}>: (number value:{}, line number:{})".format(type(self).__name__ ,\
                                              self.number_string, self.nmbr_line)
 
-class Var_token(Lexer_token):
+class Bool_token(Literal_token):
+    def __init__(self, bool_literal, nmbr_line):
+        self.bool_literal = bool_literal
+        Lexer_strct_token.__init__(self, nmbr_line)
+
+    def __str__(self):
+        return "{}: (bool value:{}, line number:{})".format(type(self).__name__ ,\
+                                             self.bool_literal, self.nmbr_line)
+    def __repr__(self):
+        return "<{}>: (bool value:{}, line number:{})".format(type(self).__name__ ,\
+                                             self.bool_literal, self.nmbr_line)
+
+class Var_token(Value_token):
+    # Var token can be a name of a function and a value.
+
     def __init__(self, nmbr_line, name = None):
         self.name = name
-        Lexer_token.__init__(self, nmbr_line)
+        Lexer_strct_token.__init__(self, nmbr_line)
 
     def __str__(self):
         return "{}: (name:{})".format(type(self).__name__, self.name)
     def __repr__(self):
         return "<{}>: (name:{})".format(type(self).__name__ , self.name)
 
-class Class_token(Lexer_token):
+class Class_token(Lexer_strct_token):
     def __init__(self, nmbr_line, name = None):
         self.name = name
-        Lexer_token.__init__(self, nmbr_line)
+        Lexer_strct_token.__init__(self, nmbr_line)
 
     def __str__(self):
         return "{}: (name:{})".format(type(self).__name__ , self.name)
     def __repr__(self):
         return "<{}>: (name:{})".format(type(self).__name__, self.name)
 
-class Public_token(Lexer_token):
+class Public_token(Lexer_strct_token):
     pass
 
-class Private_token(Lexer_token):
+class Private_token(Lexer_strct_token):
     pass
 
-
-
-class Type_token(Lexer_token):
+class Type_token(Lexer_strct_token):
     def __init__(self, nmbr_line, type_name):
         self.type_name = type_name
-        Lexer_token.__init__(self, nmbr_line)
+        Lexer_strct_token.__init__(self, nmbr_line)
 
     def __str__(self):
         return "{}: (type name:{} line number:{})".format(type(self).__name__ ,\
@@ -134,16 +152,13 @@ class Type_token(Lexer_token):
         return "<{}>: (type name:{} line number:{})".format(type(self).__name__ ,\
                                                             self.type_name, self.nmbr_line)
  
-class Print_token(Lexer_token):
+class Run_token(Lexer_strct_token):
     pass
 
-class Run_token(Lexer_token):
+class Foldl_token(Lexer_strct_token):
     pass
 
-class Foldl_token(Lexer_token):
-    pass
-
-class Foldr_token(Lexer_token):
+class Foldr_token(Lexer_strct_token):
     pass
 
 def give_first_alpha_word(remnants_of_text: str, alpha_word: str = None) -> Tuple[str, str]:
@@ -180,12 +195,12 @@ def split_number_from_text(remnants_of_text: str, string_number: str = None, fir
 
 
 special_vars = ["Rutte", "Wilders", "Corona"]
-types = ["zin", "nummer", "waarheid", "onwaarheid", "lijst"] 
+types = ["zin", "nummer", "waarheid", "onwaarheid", "lijst", "niks"] 
 operators = ["plus", "minus", "gedeelt", "maal", "hetzelvde", "niet", 
              "klijner", "minder", "meer", "groter", "is", "maak"]
 char_operators = ["+", "-", "/", "*"]
 
-def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = None) -> List[Lexer_token]:
+def make_tokens(text: str, tokens: List[Lexer_strct_token] = None, nmbr_line: int = None) -> List[Lexer_strct_token]:
     if tokens == None:
         tokens = []
     if nmbr_line == None:
@@ -211,7 +226,7 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
         tokens.append(String_token(string_literal, nmbr_line))
         return make_tokens(text, tokens, nmbr_line)
     elif text[0] == "\'":
-        tokens.append(Parameter_token(nmbr_line))
+        tokens.append(Parameter_scope_token(nmbr_line))
         return make_tokens(text[1:], tokens, nmbr_line)
     elif text[0] == "(":
         tokens.append(Beg_type_token(nmbr_line))
@@ -295,7 +310,7 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
         tokens.append(Class_token(nmbr_line))
         return make_tokens(text, tokens, nmbr_line)
     elif word == "Zeg":
-        tokens.append(Print_token(nmbr_line))
+        tokens.append(Var_token(nmbr_line, word))
         return make_tokens(text, tokens, nmbr_line)
     elif word == "Roep":
         tokens.append(Run_token(nmbr_line))
@@ -318,10 +333,10 @@ def make_tokens(text: str, tokens: List[Lexer_token] = None, nmbr_line: int = No
     return make_tokens(text, tokens, nmbr_line)
 
 if __name__ == "__main__":
-    #with open("../examples/hello_world.txt", "r") as f:
-    #    hello_word_tokens = make_tokens(f.read())
-    #    for token in hello_word_tokens:
-    #        print(token)
+    with open("../examples/hello_world.txt", "r") as f:
+        hello_word_tokens = make_tokens(f.read())
+        for token in hello_word_tokens:
+            print(token)
     
     #with open("../examples/tell_me_your_name.txt", "r") as f:
     #    tmyn_tokens = make_tokens(f.read())
@@ -349,10 +364,10 @@ if __name__ == "__main__":
     #        if type(token) == Endline_token or type(token) == Beg_scope_token:
     #            print()
     
-    with open("../examples/double_recursive.txt", "r") as f:
-        class_tokens = make_tokens(f.read())
-        for token in class_tokens:
-            print(token)
-            if type(token) == Endline_token or type(token) == Beg_scope_token:
-                print()   
+    #with open("../examples/double_recursive.txt", "r") as f:
+    #    class_tokens = make_tokens(f.read())
+    #    for token in class_tokens:
+    #        print(token)
+    #        if type(token) == Endline_token or type(token) == Beg_scope_token:
+    #            print()   
 
