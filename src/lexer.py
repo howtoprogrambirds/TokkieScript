@@ -82,7 +82,7 @@ class String_token(Literal_token):
         Lexer_strct_token.__init__(self, nmbr_line)
 
     def __str__(self):
-        return "{}: (string value:{}, line number:{})".format(type(self).__name__ ,\
+        return "{}: value:\'{}\' at line: {})".format(type(self).__name__ ,\
                                              self.string_value, self.nmbr_line)
     def __repr__(self):
         return "<{}>: (string value:{}, line number:{})".format(type(self).__name__ ,\
@@ -146,7 +146,7 @@ class Type_token(Lexer_strct_token):
         Lexer_strct_token.__init__(self, nmbr_line)
 
     def __str__(self):
-        return "{}: (type name:{} line number:{})".format(type(self).__name__ ,\
+        return "{} || (type:{}, at line:{})".format(type(self).__name__ ,\
                                                    self.type_name, self.nmbr_line)
     def __repr__(self):
         return "<{}>: (type name:{} line number:{})".format(type(self).__name__ ,\
