@@ -14,4 +14,4 @@ TokkieScript is a fun programming language dedicated to an assignment from my st
 
 ___
 I am used the rules of functional programming with this exercise, and I'm still learning!   
-So if you have any comments on my code. Be free to indicate that!
+So if you have any comments on my code. Please let me know!
