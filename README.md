@@ -3,7 +3,7 @@ TokkieScript is a fun programming language dedicated to an assignment from my st
 
 ### The requirements are:
 - [x] Written with the rules of Functional programming.
-- [ ] Can Compile on a Arduino Due.
+- [ ] Can compile on a Arduino Due.
 
 ### What to do:
 - [x] Lexer
